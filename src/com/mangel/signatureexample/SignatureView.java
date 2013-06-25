@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 
 public class SignatureView extends View {
@@ -43,6 +44,8 @@ public class SignatureView extends View {
 	private Canvas bitmapCanvas;
 	private Float lastWidth = 1f;
 
+	private VelocityTracker mVelocityTracker;
+
 	public SignatureView(Context context) {
 		super(context);
 		initialize(context);
@@ -63,6 +66,8 @@ public class SignatureView extends View {
 
 		mWhitePaint = new Paint();
 		mWhitePaint.setColor(Color.WHITE);
+		
+		mVelocityTracker = VelocityTracker.obtain();
 	}
 
 	public SignatureView(Context context, AttributeSet attrs) {
@@ -86,14 +91,17 @@ public class SignatureView extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			mVelocityTracker.addMovement(event);
 			beginNewPath();
 			return true;
 		case MotionEvent.ACTION_MOVE:
+			mVelocityTracker.addMovement(event);
 			addPointsToCurrentPath(event);
 			break;
 		case MotionEvent.ACTION_UP:
-			//			mAllPaths.add(mPath);
+		case MotionEvent.ACTION_CANCEL:
 			addPathToBitmap();
+			mVelocityTracker.clear();
 			mPath = null;
 			break;
 		default:
@@ -107,8 +115,7 @@ public class SignatureView extends View {
 
 	private void addPathToBitmap() {
 		if (bitmap == null) {
-			bitmap = Bitmap.createBitmap(getWidth(), getHeight(), 
-					Bitmap.Config.ARGB_8888);
+			bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
 			bitmapCanvas = new Canvas(bitmap);
 		}
 		synchronized (bitmapCanvas) {
@@ -135,7 +142,6 @@ public class SignatureView extends View {
 		if (mPath != null) {
 			int size = mPath.size();
 			if (size > 2) {
-				Log.d(TAG, "path size: " + size);
 				for (int i = 2; i < size; i+=2) {
 					drawArcFromPoints(canvas, mPath.get(i-2), mPath.get(i-1), mPath.get(i));
 				}
@@ -151,7 +157,8 @@ public class SignatureView extends View {
 		float widthStep;
 		mDrawablePath = buildPathFromPoints(last, middle, first);
 		points = getPointsFromPath(mDrawablePath);
-		endWidth = strokeFromTime(last.time, first.time);
+//		endWidth = strokeFromTime(last.time, first.time);
+		endWidth = strokeFromVelocity(first.velocity);
 		widthStep = (endWidth - lastWidth) / points.size();
 		for (PointF point : points) {
 //			mPaint.setStrokeWidth(lastWidth + widthStep);
@@ -181,10 +188,17 @@ public class SignatureView extends View {
 		}
 		return points;
 	}
+	
+	private float strokeFromVelocity(float velocity) {
+		velocity = Math.min(5.0f, (float) Math.pow(Math.abs(velocity), -1.0d));
+		float toReturn = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, velocity, mMetrics);
+		Log.d(TAG, "" + toReturn);
+		return toReturn;
+	}
 
 	private float strokeFromTime(Long time, Long time2) {
 		Long difference = time2 - time;
-		float toReturn = (float) (11.0f * (Math.log10(difference) - 1.45f));
+		float toReturn = (float) (2.5f * (Math.log10(difference)));
 		toReturn = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, toReturn, mMetrics);
 		Log.d(TAG, "" + toReturn + "   " + difference);
 		return toReturn;
@@ -194,13 +208,15 @@ public class SignatureView extends View {
 		float x;
 		float y;
 		long time;
+		mVelocityTracker.computeCurrentVelocity(1);
+		float velocity = (mVelocityTracker.getXVelocity() + mVelocityTracker.getYVelocity()) / 2.0f;
 		for (int i = 0; i < event.getHistorySize(); i++) {
 			x = event.getHistoricalX(i);
 			y = event.getHistoricalY(i);
 			time = event.getHistoricalEventTime(i);
-			mPath.add(new PressurePoint(x, y, time));
+			mPath.add(new PressurePoint(x, y, time, velocity));
 		}
-		mPath.add(new PressurePoint(event.getX(), event.getY(), event.getEventTime()));
+		mPath.add(new PressurePoint(event.getX(), event.getY(), event.getEventTime(), velocity));
 	}
 
 	private void beginNewPath() {
@@ -212,11 +228,13 @@ public class SignatureView extends View {
 		private float x;
 		private float y;
 		private Long time;
+		private Float velocity;
 
-		private PressurePoint(float x, float y, long time) {
+		private PressurePoint(float x, float y, long time, float velocity) {
 			this.x = x;
 			this.y = y;
 			this.time = time;
+			this.velocity = velocity;
 		}
 
 		public String toString() {
