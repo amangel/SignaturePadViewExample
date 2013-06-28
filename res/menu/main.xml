@@ -1,9 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_clear"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/action_settings"/>
-
+        android:title="Clear"/>
+    <item
+        android:id="@+id/action_hasBeenMarked"
+        android:orderInCategory="101"
+        android:showAsAction="never"
+        android:title="Marked?"/>
+    <item
+        android:id="@+id/action_getImage"
+        android:orderInCategory="102"
+        android:showAsAction="never"
+        android:title="Pull image"/>    
 </menu>
