@@ -302,7 +302,7 @@ public class SignaturePadView extends View {
 	}
 
 	private float strokeFromVelocity(float velocity) {
-		velocity = Math.max(1.0f, Math.min(5.0f, (float) Math.pow(Math.abs(velocity), -1.0d)));
+		velocity = Math.max(1.0f, Math.min(5.0f, (float) Math.pow(Math.abs(velocity), -0.75d)));
 		float toReturn = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, velocity, mMetrics);
 		return toReturn;
 	}
