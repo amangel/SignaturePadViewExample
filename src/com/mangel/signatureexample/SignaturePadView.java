@@ -29,6 +29,22 @@ import android.view.View;
 
 public class SignaturePadView extends View {
 
+	private static final boolean DEFAULT_RETAIN_SIGNATURE_FLAG = true;
+
+	private static final int DEFAULT_UNDERLINE_LABEL_TEXT_SIZE = 15;
+
+	private static final int DEFAULT_UNDERLINE_TEXT_COLOR = 0xff4d4d4d;
+
+	private static final int DEFAULT_UNDERLINE_THICKNESS = 2;
+
+	private static final int DEFAULT_UNDERLINE_COLOR = 0xff4d4d4d;
+
+	private static final boolean DEFAULT_SHOW_SIGNATURE_FLAG = true;
+
+	private static final int DEFAULT_SIGNATURE_COLOR = 0xff2d2d2d;
+
+	private static final int DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+
 	public static final String TAG = "signature";
 
 	private static final String WIDTH = "width";
@@ -126,15 +142,15 @@ public class SignaturePadView extends View {
 				0, 0);
 
 		try {
-			mBackgroundColor = a.getColor(R.styleable.SignaturePadView_backgroundColor, Color.WHITE);
-			mSignatureColor = a.getColor(R.styleable.SignaturePadView_signatureColor, 0xff2d2d2d);
-			mShowUnderline = a.getBoolean(R.styleable.SignaturePadView_showUnderline, false);
-			mUnderlineColor = a.getColor(R.styleable.SignaturePadView_underlineColor, 0xff4d4d4d);
-			mUnderlineThickness = a.getDimensionPixelSize(R.styleable.SignaturePadView_underlineThickness, 2);
-			mTextColor = a.getColor(R.styleable.SignaturePadView_signatureColor, 0xff4d4d4d);
-			mTextSize = a.getDimensionPixelSize(R.styleable.SignaturePadView_textSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15, mMetrics));
+			mBackgroundColor = a.getColor(R.styleable.SignaturePadView_backgroundColor, DEFAULT_BACKGROUND_COLOR);
+			mSignatureColor = a.getColor(R.styleable.SignaturePadView_signatureColor, DEFAULT_SIGNATURE_COLOR);
+			mShowUnderline = a.getBoolean(R.styleable.SignaturePadView_showUnderline, DEFAULT_SHOW_SIGNATURE_FLAG);
+			mUnderlineColor = a.getColor(R.styleable.SignaturePadView_underlineColor, DEFAULT_UNDERLINE_COLOR);
+			mUnderlineThickness = a.getDimensionPixelSize(R.styleable.SignaturePadView_underlineThickness, DEFAULT_UNDERLINE_THICKNESS);
+			mTextColor = a.getColor(R.styleable.SignaturePadView_signatureColor, DEFAULT_UNDERLINE_TEXT_COLOR);
+			mTextSize = a.getDimensionPixelSize(R.styleable.SignaturePadView_textSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, DEFAULT_UNDERLINE_LABEL_TEXT_SIZE, mMetrics));
 			mUnderlineLabel = a.getString(R.styleable.SignaturePadView_underlineLabel);
-			mRetainSignatureOnRotate = a.getBoolean(R.styleable.SignaturePadView_retainSignatureOnRotate, true);
+			mRetainSignatureOnRotate = a.getBoolean(R.styleable.SignaturePadView_retainSignatureOnRotate, DEFAULT_RETAIN_SIGNATURE_FLAG);
 		} finally {
 			a.recycle();
 		}
