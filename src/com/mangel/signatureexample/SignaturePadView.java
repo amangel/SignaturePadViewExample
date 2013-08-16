@@ -193,7 +193,7 @@ public class SignaturePadView extends View {
 	private void addPathToBitmap(List<VelocityPoint> path) {
 		if (mStoredBitmap == null && getWidth() > 0 && getHeight() > 0) {
 			initBitmap();
-		} else if (mStoredBitmap.getWidth() != getWidth() && mStoredBitmap.getHeight() != getHeight()) {
+		} else if (mStoredBitmap != null && mStoredBitmap.getWidth() != getWidth() && mStoredBitmap.getHeight() != getHeight()) {
 			initBitmap();
 			redrawAllPathsWithScalar(1.0f);
 		}
