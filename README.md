@@ -1,2 +1,2 @@
-### SignaturePadView
-A custom view for Android to collect a signature.
+### SignaturePadView Example
+A simple project showing how to add a SignaturePad view and to pull an image from it.
